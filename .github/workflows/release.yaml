@@ -43,21 +43,9 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - triplet: x86-windows-static
-            arch: '-A Win32'
           - triplet: x64-windows-static
             arch: '-A x64'
-            run_benchmark: true
-          - triplet: x64-windows-static
-            arch: '-A x64'
-            build_type: Debug
-            upload: 'OFF'
-          - triplet: x86-windows
-            arch: '-A Win32'
-            static: 'OFF'
-          - triplet: x64-windows
-            arch: '-A x64'
-            static: 'OFF'
+            build_type: Release
 
     env:
       VCPKG_VERSION: '2026.07.29'
