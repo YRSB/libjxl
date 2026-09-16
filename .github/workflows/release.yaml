@@ -248,7 +248,7 @@ jobs:
             static: 'OFF'
 
     env:
-      VCPKG_VERSION: '2025.10.17'
+      VCPKG_VERSION: '2026.07.29'
       VCPKG_ROOT: vcpkg
       VCPKG_DISABLE_METRICS: 1
       BUILD_TYPE: ${{ matrix.build_type || 'Release' }}
