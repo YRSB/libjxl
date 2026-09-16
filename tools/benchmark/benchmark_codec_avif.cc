@@ -233,6 +233,13 @@ class AvifCodec : public ImageCodec {
       log2_rows = strtol(param.c_str() + 10, nullptr, 10);
       return true;
     }
+    // 指定编码位深，如 depth=10；不写则跟随输入图位深。
+    if (param.compare(0, 6, "depth=") == 0) {
+      const int depth = static_cast<int>(strtol(param.c_str() + 6, nullptr, 10));
+      if (depth != 8 && depth != 10 && depth != 12) return false;
+      depth_ = depth;
+      return true;
+    }
     if (param[0] == 's') {
       speed_ = strtol(param.c_str() + 1, nullptr, 10);
       return true;
@@ -289,8 +296,11 @@ class AvifCodec : public ImageCodec {
     size_t max_threads = GetNumThreads(pool);
     const double start = jxl::Now();
     {
-      const auto depth =
-          std::min<int>(16, io->metadata.m.bit_depth.bits_per_sample);
+      // 指定了位深就用指定的，否则跟随输入图位深。
+      const auto depth = (depth_ != 0)
+                             ? depth_
+                             : std::min<int>(
+                                   16, io->metadata.m.bit_depth.bits_per_sample);
       std::unique_ptr<avifEncoder, void (*)(avifEncoder*)> encoder(
           avifEncoderCreate(), &avifEncoderDestroy);
       encoder->codecChoice = encoder_;
@@ -449,6 +459,8 @@ class AvifCodec : public ImageCodec {
   int speed_ = AVIF_SPEED_DEFAULT;
   int log2_cols = 0;
   int log2_rows = 0;
+  // 编码位深，0 表示跟随输入图位深。
+  int depth_ = 0;
   std::vector<std::pair<std::string, std::string>> codec_specific_options_;
 };
 
